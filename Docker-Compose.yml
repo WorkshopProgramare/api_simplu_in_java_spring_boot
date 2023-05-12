@@ -1,0 +1,30 @@
+version: "3"
+services:
+  mongodb_container:
+    image: mongo:4.4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+    env_file:
+      - ./.env
+  todolist:
+    image: todolist-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_HOST=${MONGO_HOST}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb_container
+    expose:
+      - "8080"
+    env_file:
+      - ./.env
+volumes:
+  mongodb_data_container:
